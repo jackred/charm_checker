@@ -47,7 +47,7 @@ def sequence():
                        for i in content['charm'].split('|')])
     mbs = [difflib.SequenceMatcher(None, charms, t).get_matching_blocks()
            for t in tables]
-    res = '\n'.join(['{} charm(s) in common with table {}'.format(
+    res = '\n'.join(['{} charm(s) in common with table `{}`'.format(
         sum([mbs[i][j].size
              for j in range(len(mbs[i]))]),  name[i])
                      for i in range(len(tables))])
@@ -73,7 +73,7 @@ def charm():
         else:
             name_table = name[is_in_any]
             return "Slot doesn't match any charm. Charm without slot (in" \
-                " case of error) in table{} {}".format(
+                " case of error) in table{} `{}`".format(
                     's' if len(name_table) > 1 else '', ', '.join(name_table))
     else:
         return 'charm in 0 table'
