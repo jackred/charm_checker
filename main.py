@@ -13,19 +13,21 @@ def clean(series):
                     .apply(lambda x: x.strip()))
 
 
-table = pd.read_csv('./data/testcharm - Table.csv')
+table = pd.read_csv('./data/proper - Table.csv')
 table = table.drop(0)
+c = list(range(0, len(table.iloc[0]), 7))
 r = list(range(4, len(table.iloc[0]), 7))
 s = list(range(5, len(table.iloc[0]), 7))
-tables = table[table.columns[r[0:3]]]
+name = table.columns[c]
+tables = table[table.columns[r]]
 tables = np.array([clean(tables[i]) for i in tables], dtype=object)
-slots = table[table.columns[s[0:3]]]
+slots = table[table.columns[s]]
 slots = slots.apply(lambda x: x.apply(
     lambda y: y.replace('-0', '').strip()
     if isinstance(y, str) else y)).to_numpy().transpose()
 slots = np.array([slots[i][:len(tables[i])] for i in range(len(tables))],
                  dtype=object)
-name = np.array(range(len(tables)), dtype=str)
+
 
 
 app = Flask(__name__)
@@ -44,9 +46,9 @@ def sequence():
                        for i in request.form['charm'].split('|')])
     mbs = [difflib.SequenceMatcher(None, charms, t).get_matching_blocks()
            for t in tables]
-    res = '\n'.join(['Match with table {} - {} charm(s)'.format(
-        name[i], sum([mbs[i][j].size
-                      for j in range(len(mbs[i]))]))
+    res = '\n'.join(['{} charm(s) in common with table {}'.format(
+        sum([mbs[i][j].size
+             for j in range(len(mbs[i]))]),  name[i])
                      for i in range(len(tables))])
     return res
 
