@@ -35,8 +35,8 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def catch_all(path):
-    return 'nothing to see at %s'
+def catch_all():
+    return 'nothing to see here'
 
 
 @app.route('/sequence', methods=['POST'])
