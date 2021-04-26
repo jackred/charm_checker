@@ -41,9 +41,10 @@ def catch_all():
 
 @app.route('/sequence', methods=['POST'])
 def sequence():
-    print(request.form['charm'])
+    content = request.get_json()
+    print(content['charm'])
     charms = np.array([i.strip().lower()
-                       for i in request.form['charm'].split('|')])
+                       for i in content['charm'].split('|')])
     mbs = [difflib.SequenceMatcher(None, charms, t).get_matching_blocks()
            for t in tables]
     res = '\n'.join(['{} charm(s) in common with table {}'.format(
@@ -55,12 +56,13 @@ def sequence():
 
 @app.route('/charm', methods=['POST'])
 def charm():
-    print(request.form['charm'])
-    charm = request.form['charm'].strip().lower()
+    content = request.get_json()
+    print(content)
+    charm = content['charm'].strip().lower()
     is_in = [t == charm for t in tables]
     is_in_any = [i.any() for i in is_in]
     if sum(is_in_any) > 0:
-        slot = request.form['slot'].strip().replace('-0', '')
+        slot = content['slot'].strip().replace('-0', '')
         compare = [slots[i][is_in[i]] for i in range(len(slots))]
         is_in_slot = [t == slot for t in compare]
         is_in_slot_any = [i.any() for i in is_in_slot]
