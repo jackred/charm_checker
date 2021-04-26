@@ -68,7 +68,7 @@ def charm():
         is_in_slot_any = [i.any() for i in is_in_slot]
         if sum(is_in_slot_any) > 0:
             name_table = name[is_in_slot_any]
-            return 'Charm+slot in table{} {}'.format(
+            return 'Charm+slot in table{} `{}`'.format(
                     's' if len(name_table) > 1 else '', ', '.join(name_table))
         else:
             name_table = name[is_in_any]
