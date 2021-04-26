@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+from flask import jsonify
 
 import pandas as pd
 import numpy as np
@@ -18,7 +19,7 @@ table = table.drop(0)
 c = list(range(0, len(table.iloc[0]), 7))
 r = list(range(4, len(table.iloc[0]), 7))
 s = list(range(5, len(table.iloc[0]), 7))
-name = table.columns[c]
+name = np.array(table.columns[c])
 tables = table[table.columns[r]]
 tables = np.array([clean(tables[i]) for i in tables], dtype=object)
 slots = table[table.columns[s]]
@@ -47,11 +48,9 @@ def sequence():
                        for i in content['charm'].split('|')])
     mbs = [difflib.SequenceMatcher(None, charms, t).get_matching_blocks()
            for t in tables]
-    res = '\n'.join(['{} charm(s) in common with table `{}`'.format(
-        sum([mbs[i][j].size
-             for j in range(len(mbs[i]))]),  name[i])
-                     for i in range(len(tables))])
-    return res
+    res = np.array([sum(j.size for j in m) for m in mbs])
+    res_name = name[res > 0].tolist()
+    return jsonify({'match': res[res > 0].tolist(), 'name': res_name})
 
 
 @app.route('/charm', methods=['POST'])
@@ -68,12 +67,9 @@ def charm():
         is_in_slot_any = [i.any() for i in is_in_slot]
         if sum(is_in_slot_any) > 0:
             name_table = name[is_in_slot_any]
-            return 'Charm+slot in table{} `{}`'.format(
-                    's' if len(name_table) > 1 else '', ', '.join(name_table))
+            return jsonify({'found': 2, 'tables': name_table.tolist()})
         else:
             name_table = name[is_in_any]
-            return "Slot doesn't match any charm. Charm without slot (in" \
-                " case of error) in table{} `{}`".format(
-                    's' if len(name_table) > 1 else '', ', '.join(name_table))
+            return jsonify({'found': 1, 'tables': name_table.tolist()})
     else:
-        return 'charm in 0 table'
+        return jsonify({'found': 0})
