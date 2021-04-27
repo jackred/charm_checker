@@ -49,8 +49,8 @@ def sequence():
     mbs = [difflib.SequenceMatcher(None, charms, t).get_matching_blocks()
            for t in tables]
     res = np.array([max(j.size for j in m) for m in mbs])
-    res_name = name[res > 0].tolist()
-    return jsonify({'match': res[res > 0].tolist(), 'name': res_name})
+    res_name = name[res > 1].tolist()
+    return jsonify({'match': res[res > 1].tolist(), 'name': res_name})
 
 
 @app.route('/charm', methods=['POST'])
