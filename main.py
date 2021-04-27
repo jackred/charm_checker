@@ -48,7 +48,7 @@ def sequence():
                        for i in content['charm'].split('|')])
     mbs = [difflib.SequenceMatcher(None, charms, t).get_matching_blocks()
            for t in tables]
-    res = np.array([sum(j.size for j in m) for m in mbs])
+    res = np.array([max(j.size for j in m) for m in mbs])
     res_name = name[res > 0].tolist()
     return jsonify({'match': res[res > 0].tolist(), 'name': res_name})
 
